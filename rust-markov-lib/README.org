@@ -1,0 +1,22 @@
+#+TITLE: Rust Markov Library
+
+This Rust Library is aimed at representing and solving common "Markov Problems", meaning problems that can be modelled using the Markov Property. It provides an easy-to-use and easy-to-extend interface to many Markov problems. 
+
+* Documentation
+
+** Supported models formats
+*** AIDDL
+*** Cassandra Format Parsing
+*** OpenMarkov Format Parsing
+
+** Implemented Models
+| Model        | Status            | Reference |
+|--------------+-------------------+-----------|
+| Markov Chain | Under Development |           |
+| MDP          | Under Development |           |
+| POMDP        | Under Development |           |
+| POMDP-IR     | Under Development |           |
+| Com-POMDP-IR | Under Development |           |
+|              |                   |           |
+
+** Implemented Algorithms

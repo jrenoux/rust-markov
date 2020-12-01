@@ -5,8 +5,10 @@ use crate::mdp::MDP;
 // Structure Definition                                                   //
 ////////////////////////////////////////////////////////////////////////////
 pub struct SimpleMDP {
-    pub states:usize,
-    pub actions:usize,
+    pub nb_states:usize,
+    pub state_list:Vec<String>,
+    pub nb_actions:usize,
+    pub action_list:Vec<String>,
     pub transitions:Vec<Vec<Vec<f32>>>,
     pub reward:Vec<Vec<Vec<f32>>>,
     pub discount:f32,
@@ -18,8 +20,25 @@ pub struct SimpleMDP {
 // SimpleMDP Structure Implementation                                     //
 ////////////////////////////////////////////////////////////////////////////
 impl SimpleMDP {
-    pub fn new(nb_states:usize, nb_actions:usize, transitions:Vec<Vec<Vec<f32>>>, reward:Vec<Vec<Vec<f32>>>, discount:f32) -> SimpleMDP{
+    pub fn new(nb_states:usize, nb_actions:usize, transitions:Vec<Vec<Vec<f32>>>, reward:Vec<Vec<Vec<f32>>>, discount:f32) -> SimpleMDP {
+	let mut states:Vec<String> = Vec::new();
+	let mut actions:Vec<String> = Vec::new();
+	for s in 0..nb_states {
+	    states.push(format!("{}",s));
+	}
+
+	for a in 0..nb_actions {
+	    actions.push(format!("{}", a));
+	}
+	
+	SimpleMDP::new_named(states, actions, transitions, reward, discount)
+    }
+
+    
+    pub fn new_named(states:Vec<String>, actions:Vec<String>, transitions:Vec<Vec<Vec<f32>>>, reward:Vec<Vec<Vec<f32>>>, discount:f32) -> SimpleMDP{
 	// some sanity checks on the creation of the MDP
+	let nb_states = states.len();
+	let nb_actions = actions.len();
 
 	// check transition function size
 	if transitions.len() != nb_states {
@@ -60,8 +79,10 @@ impl SimpleMDP {
 	}
 
 	SimpleMDP {
-	    states: nb_states,
-	    actions: nb_actions,
+	    nb_states: nb_states,
+	    state_list:states,
+	    nb_actions: nb_actions,
+	    action_list:actions,
 	    transitions: transitions.clone(),
 	    reward: reward.clone(),
 	    discount: discount,
@@ -69,6 +90,7 @@ impl SimpleMDP {
 	}
 	
     }
+
 }
 
 
@@ -77,11 +99,11 @@ impl SimpleMDP {
 ////////////////////////////////////////////////////////////////////////////
 impl MDP for SimpleMDP {
     fn get_nb_states(&self) -> usize {
-	self.states
+	self.nb_states
     }
 
     fn get_nb_actions(&self) -> usize {
-	self.actions
+	self.nb_actions
     }
     
     fn get_discount_factor(&self) -> f32 {

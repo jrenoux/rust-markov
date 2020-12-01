@@ -1,49 +1,103 @@
-
+use crate::mdp::MDP;
+use crate::utils::*;
 
 ////////////////////////////////////////////////////////////////////////////
 // Value Iteration                                                        //
 ////////////////////////////////////////////////////////////////////////////
 
-pub mod ValueIteration {
-    use crate::mdp::MDP;
-    use crate::utils::*;
+pub struct ValueIteration<'a, T>
+where T:MDP{
+    // Parameters
+    epsilon:f32,
+    mdp: &'a T,
     
-    pub fn solve<T>(mdp:&T, epsilon:f32)
-    where T: MDP{
-	// Vector of utilities
-	let utility_vector:Vec<f32> = vec![0.0; mdp.get_nb_states()];
-	let mut previous_utility_vector:Vec<f32>;
+    // Internal
+    value_vector:std::option::Option<Vec<f32>>,
+    policy:std::option::Option<Vec<usize>>,
 
-	// Policy. Contains the indices of the actions
-	let mut policy:Vec<u32> = vec![0; mdp.get_nb_states()];
+    // To make it private
+    _private:()
+}
+
+impl<'a, T> ValueIteration<'a, T>
+where T:MDP {
+
+    pub fn new(mdp: &'a T, eps:f32) -> ValueIteration<'a, T>{
+	ValueIteration {
+	    epsilon: eps,
+	    mdp: mdp,
+	    value_vector: None,
+	    policy: None,
+	    _private: ()
+	}
+    }
+ 
+    pub fn solve(&mut self)
+    where T: MDP{
+	
+	// initialize the value_vector
+	let mut utility_vector = vec![0.0; self.mdp.get_nb_states()];
+	//  and the policy_vector
+	let mut policy_vector = vec![0; self.mdp.get_nb_states()];
+	
+	// Vector of utilities
+	let mut previous_utility_vector:Vec<f32>;
 
 	// maximum relative change in utility of any state
 	let mut delta = 0.0;
-
+ 
 
 	loop {
+	    delta = 0.0;
 	    previous_utility_vector = utility_vector.clone();
 	    
-	    for s in 0..(*mdp).get_nb_states() {
+	    for s in 0..self.mdp.get_nb_states() {
 		// update the q-value function
-		let mut max_utility = 0;
+		let mut max_utility = None;
+		let mut best_action = None;
 		// for each possible action
-		for a in 0..mdp.get_nb_actions() {
-		    let utility = q_value(mdp, s, a, &utility_vector);
+		for a in 0..self.mdp.get_nb_actions() {
+		    let utility = q_value(self.mdp, s, a, &previous_utility_vector);
+		    match max_utility {
+			None => {
+			    max_utility = Some(utility);
+			    best_action = Some(a);
+			},
+			Some(mu) => {
+			    if utility > mu {
+				max_utility = Some(utility);
+				best_action = Some(a);
+			    }
+			},
+		    };
 		}
 
+		utility_vector[s] = max_utility.unwrap();
+		policy_vector[s] = best_action.unwrap();
+
 		// Check the utility change
-		if (utility_vector[s] - previous_utility_vector[s]).abs() > delta {
+		let new_delta = (utility_vector[s] - previous_utility_vector[s]).abs();
+		if new_delta > delta {
 		    delta = (utility_vector[s] - previous_utility_vector[s]).abs();
 		}
 	
 	    }
-
 	    // stopping condition
-	    if delta <= (epsilon * (1.0 - mdp.get_discount_factor()) / mdp.get_discount_factor()) { break; }
+	    if delta <= (self.epsilon * (1.0 - self.mdp.get_discount_factor()) / self.mdp.get_discount_factor()) { break; }
 	}
-	
+	self.value_vector = Some(utility_vector);
+	self.policy = Some(policy_vector);
     }
+
+    pub fn get_value_vector(&self) -> &std::option::Option<Vec<f32>> {
+	return &self.value_vector;
+    }
+
+    pub fn get_policy(&self) -> &std::option::Option<Vec<usize>> {
+	return &self.policy;
+    }
+
+    
 }
 
 
@@ -83,9 +137,14 @@ mod test{
     }
 
     #[test]
-    fn hello_test() {
-	
-	ValueIteration::solve(&create_mdp(), 0.01);
+    fn value_iteration_solve() {
+	let mdp = create_mdp();
+	let mut solver = ValueIteration::new(&mdp, 0.01);
+	solver.solve();
+	let optimal_utility_vector = solver.get_value_vector();
+	let optimal_policy = solver.get_policy();
+	eprintln!("Utility_vector:{:?}", optimal_utility_vector);
+	eprintln!("optimal_policy:{:?}", optimal_policy);
     }
 	
 }

@@ -91,6 +91,22 @@ impl SimpleMDP {
 	
     }
 
+    pub fn get_state_list(&self) -> &Vec<String> {
+	&self.state_list
+    }
+
+    pub fn get_action_list(&self) -> &Vec<String> {
+	&self.action_list
+    }
+
+    pub fn get_state(&self, number:usize)-> &String {
+	&self.state_list[number]
+    }
+
+    pub fn get_action(&self, number:usize) -> &String {
+	&self.action_list[number]
+    }
+    
 }
 
 

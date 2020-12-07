@@ -58,16 +58,17 @@ where T:MDP {
 		// for each possible action
 		for a in 0..self.mdp.get_nb_actions() {
 		    let utility = q_value(self.mdp, s, a, &previous_utility_vector);
+		    
 		    match max_utility {
-			None => {
-			    max_utility = Some(utility);
-			    best_action = Some(a);
-			},
 			Some(mu) => {
 			    if utility > mu {
 				max_utility = Some(utility);
 				best_action = Some(a);
 			    }
+			},
+			None => {
+			    max_utility = Some(utility);
+			    best_action = Some(a);
 			},
 		    };
 		}
@@ -118,6 +119,7 @@ pub mod PolicyIteration {
 ////////////////////////////////////////////////////////////////////////////
 #[cfg(test)]
 mod test{
+    use float_cmp::*;
     use super::*;
     use crate::mdp::simple_mdp::SimpleMDP;
 
@@ -136,15 +138,110 @@ mod test{
 	SimpleMDP::new(states, actions, transitions, rewards, 0.95)
     }
 
+
+    fn create_student_mdp() -> SimpleMDP {
+	let states = vec!["facebook".to_string(), "class1".to_string(), "pub".to_string(), "pass".to_string()];
+	let actions = vec!["browse".to_string(), "study".to_string(), "go_pub".to_string()];
+	let nb_actions = actions.len();
+	let nb_states = states.len();
+
+	let mut transitions = vec![
+	    vec![vec![0.0; nb_states] ; nb_actions] ; nb_states
+	];
+
+	let mut reward = vec![
+	    vec![vec![0.0; nb_states] ; nb_actions] ; nb_states
+	];
+
+	// init the transitions -> To correct
+	// facebook starting state
+	// browse -> facebook
+	transitions[0][0][0] = 1.0;
+	// study -> class1 (0.7) / facebook (0.3)
+	transitions[0][1][1] = 0.7;
+	transitions[0][1][0] = 0.3;
+	// go_pub -> pub
+	transitions[0][2][2] = 1.0;
+	
+	// class1 starting state
+	// browse -> facebook
+	transitions[1][0][0] = 1.0;
+	// study -> pass (0.7) / class1 (0.3)
+	transitions[1][1][3] = 0.7;
+	transitions[1][1][1] = 0.3;	    
+	// go_pub -> pub
+	transitions[1][2][2] = 1.0;
+
+	// pub starting state
+	// browse -> facebook (0.5) / pub (0.5)
+	transitions[2][0][0] = 0.2;
+	transitions[2][0][2] = 0.8;
+	// study -> class1 (0.2) / pub (0.8)
+	transitions[2][1][1] = 0.4;
+	transitions[2][1][2] = 0.6;
+	// go_pub -> pub
+	transitions[2][2][2] = 1.0;
+
+
+	// pass starting state
+	// browse -> pass
+	transitions[3][0][3] = 1.0;
+	// study -> pass
+	transitions[3][1][3] = 1.0;
+	// go_pub -> pass
+	transitions[3][2][3] = 1.0;
+
+	for s in 0..nb_states {
+	    // facebook
+	    reward[0][1][1] = -1.0;
+	    
+	    // class1
+	    reward[1][0][0] = 1.0;
+	    reward[1][1][3] = 10.0;
+	    reward[1][2][2] = 2.0;
+
+	    // pub
+	    reward[2][1][1] = -1.0;
+	}
+
+	// eprintln!("transitions: ");
+	// eprintln!("{:?}", transitions);
+
+	// eprintln!("rewards: ");
+	// eprintln!("{:?}", reward);
+	
+	SimpleMDP::new_named(states, actions, transitions, reward, 0.95)	
+	
+    }
+
     #[test]
     fn value_iteration_solve() {
-	let mdp = create_mdp();
+	let mdp = create_student_mdp();
 	let mut solver = ValueIteration::new(&mdp, 0.01);
 	solver.solve();
 	let optimal_utility_vector = solver.get_value_vector();
 	let optimal_policy = solver.get_policy();
-	eprintln!("Utility_vector:{:?}", optimal_utility_vector);
-	eprintln!("optimal_policy:{:?}", optimal_policy);
+
+	let expected_utility_vector = vec![8.126558, 9.79021, 7.72112, 0.0];
+	let expected_policy = vec![1, 1, 1, 0];
+
+	match optimal_utility_vector {
+	    None => panic!("No optimal policy has been found"),
+	    Some(v) => {
+		for index in 0..v.len() {
+		    assert!(approx_eq!(f32, v[index], expected_utility_vector[index], ulps=4))
+		}
+	    }
+	}
+	
+	match optimal_policy {
+	    None => panic!("No optimal policy has been found"),
+	    Some(p) => {
+		for index in 0..p.len() {
+		    assert!(p[index] == expected_policy[index])
+		}
+	    }
+	}
     }
 	
 }

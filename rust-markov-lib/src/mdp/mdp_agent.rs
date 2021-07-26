@@ -1,5 +1,5 @@
 use std::{collections::{HashMap, HashSet}, hash::Hash};
-use super::{reward_model::RewardModel, transition_model::TransitionModel};
+use super::{reward_model::{MatrixReward, RewardModel}, transition_model::{MatrixTransition, TransitionModel}};
 use float_cmp;
 pub struct MDPAgent<S, A, T, R> where
     S: Eq + Hash,
@@ -33,17 +33,17 @@ impl<S, A, T, R> MDPAgent<S, A, T, R>  where
 
     }
 
-    pub fn new_matrix(nb_states: usize, nb_actions: usize, transitions: T, rewards: R, discount: f64) -> MDPAgent<usize, usize, T, R> where 
+    pub fn new_matrix(nb_states: usize, nb_actions: usize, t: T, r: R, discount: f64) -> MDPAgent<usize, usize, T, R> where 
     T: TransitionModel<usize, usize>,
-    R: RewardModel<usize, usize> {
+    R: RewardModel <usize, usize> {
         // create a hashset from enumeration 
         let state_set: HashSet<usize> = (0..nb_states).collect();
         let action_set: HashSet<usize> = (0..nb_actions).collect();
         MDPAgent {
             states: state_set,
             actions: action_set,
-            transitions,
-            rewards,
+            transitions: t,
+            rewards: r,
             discount,
             transition_values: HashMap::new(),
             reward_values: HashMap::new(),
@@ -100,7 +100,7 @@ mod test{
 
             ];
         
-        let t = MatrixTransition::new(transition_array);
+        let t: MatrixTransition = MatrixTransition::new(transition_array);
 
         let reward_array = vec![
                 //s1
@@ -114,9 +114,9 @@ mod test{
                      vec![0.0, -10.0, 0.0]]
             ];
 
-        let r = MatrixReward::new(reward_array);
+        let r: MatrixReward = MatrixReward::new(reward_array);
 
-        let mdp_agent = MDPAgent::new_matrix(3, 2, t, r, 0.9);
+        let mdp_agent: MDPAgent<usize, usize, MatrixTransition, MatrixReward> = MDPAgent::new_matrix(3, 2, t, r, 0.9);
 
         assert!(mdp_agent.validate());
         }

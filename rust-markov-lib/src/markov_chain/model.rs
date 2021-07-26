@@ -24,13 +24,13 @@ pub struct MarkovChain{
 ////////////////////////////////////////////////////////////////////////////
 
 impl MarkovChain {
-    pub fn new(states:usize, transitions:Vec<Vec<f32>>) -> MarkovChain {
+    pub fn new(states:usize, t:Vec<Vec<f32>>) -> MarkovChain {
         // check that the transitions hav the right format
-        let size_x:usize = transitions.len();
+        let size_x:usize = t.len();
         if size_x != states {
             panic!("[Malformed Transition Function]  X_length = {} for {} states", size_x, states);
         }
-        for i in &transitions {
+        for i in &t {
             if i.len() != states {
                 panic!("[Malformed Transition Function] Y_length = {} for {} states", i.len(), states);
             }
@@ -56,7 +56,7 @@ impl MarkovChain {
 	// creates the VA table for each state
 	let mut va_tables:Vec<VoseAlias<usize>> = Vec::new();
 	for s in 0 .. states {
-	    match transitions.get(s) {
+	    match t.get(s) {
 		Some(t) => {
 		    let va = VoseAlias::new(element_vector.clone(), t.clone());
 		    println!("{}", va);
@@ -74,7 +74,7 @@ impl MarkovChain {
 
         let mc = MarkovChain {
             states: 3,
-            transitions: transitions,
+            transitions: t,
 	    vose_alias_tables: va_tables,
             _private: ()
         };

@@ -2,15 +2,6 @@ use std::collections::HashMap;
 
 // use crate::mdp::AbstractMDP;
 
-// pub fn q_value<T>(mdp: &T, s: usize, a: usize, utility_vector: &Vec<f32>) -> f32 
-// where T: AbstractMDP {
-//     let mut sum = 0.0;
-//     for s2 in 0..(*mdp).get_nb_states() {
-// 	sum = sum + (*mdp).get_transition_probabilitiy(s, a, s2) * ((*mdp).get_reward(s, a, s2) + (*mdp).get_discount_factor() * (*utility_vector)[s2]);
-//     }
-
-//     return sum;   
-// }
 
 
 // ////////////////////////////////////////////////////////////////////////////

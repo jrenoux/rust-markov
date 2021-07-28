@@ -12,8 +12,4 @@ pub mod mdp_agent;
 mod test{
     use super::*;
 
-    // create MDP from matrices
-
-
-    // create MDP with function
 }

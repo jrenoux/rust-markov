@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet}, hash::Hash};
+use std::{collections::{HashSet}, hash::Hash};
 use super::{reward_model::{MatrixReward, RewardModel}, transition_model::{MatrixTransition, TransitionModel}};
 use float_cmp;
 pub struct MDPAgent<S, A, T, R> where
@@ -6,11 +6,11 @@ pub struct MDPAgent<S, A, T, R> where
     A: Eq + Hash,
     T: TransitionModel<S, A>,
     R: RewardModel<S, A> {
-        states: HashSet<S>,
-        actions: HashSet<A>,
-        transitions: T,
-        rewards: R,
-        discount: f64
+        pub states: HashSet<S>,
+        pub actions: HashSet<A>,
+        pub transitions: T,
+        pub rewards: R,
+        pub discount: f64
 }
 
 impl<S, A, T, R> MDPAgent<S, A, T, R>  where 
@@ -76,6 +76,19 @@ impl MDPAgent<usize, usize, MatrixTransition, MatrixReward>{
             discount,
         }
     }
+}
+////////////////////////////////////////////////////////////////////////////
+// Std traits implementation    
+// See https://rust-lang.github.io/api-guidelines/interoperability.html                                          //
+////////////////////////////////////////////////////////////////////////////
+impl<S, A, T, R> Clone for MDPAgent<S, A, T, R>  where 
+S: Eq + Hash,
+A: Eq + Hash,
+T: TransitionModel<S, A>,
+R: RewardModel<S, A>{
+
+    fn clone(&self) -> Self { todo!() }
+
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -149,7 +162,7 @@ mod test{
     struct StudentRewardModel {}
     impl RewardModel<String, String> for StudentRewardModel {
         fn get_reward(&self, _s1: &String, _a: &String, s2: &String) -> f64 {
-            if s2.as_str() == "passed" {
+            if s2.as_str().eq("passed") {
                 10.0
             }
             else {

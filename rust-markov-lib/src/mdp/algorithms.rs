@@ -13,7 +13,7 @@ use std::option::Option;
 // ////////////////////////////////////////////////////////////////////////////
 pub struct ValueIteration<'a, S, A, T, R> where 
 S: Clone + Eq + Hash, 
-A: Eq + Hash,
+A: Eq + Hash + Clone,
 T: TransitionModel<S, A>,
 R: RewardModel<S, A> {
     // parameters
@@ -27,7 +27,7 @@ R: RewardModel<S, A> {
 
 impl<'a, S, A, T, R> ValueIteration<'a, S, A, T, R> where 
 S: Clone + Eq + Hash, 
-A: Eq + Hash,
+A: Eq + Hash + Clone,
 T: TransitionModel<S, A>,
 R: RewardModel<S, A> {
     pub fn new(mdp: &'a MDPAgent<S, A, T, R>, epsilon: f64) -> Self {

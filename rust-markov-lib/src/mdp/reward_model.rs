@@ -3,7 +3,7 @@ use std::{collections::HashMap};
 
 use crate::utils::vector_to_hashmap;
 
-pub trait RewardModel<S, A> where 
+pub trait RewardModel<S, A>  where 
     S: Eq + Hash, 
     A: Eq + Hash {
     fn get_reward(&self, s1: &S, a: &A, s2: &S) -> f64; 

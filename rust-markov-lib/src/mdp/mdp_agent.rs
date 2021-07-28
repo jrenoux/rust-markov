@@ -1,9 +1,10 @@
-use std::{collections::{HashSet}, hash::Hash};
+use std::{collections::{HashSet}, fmt::Display, hash::Hash};
 use super::{reward_model::{MatrixReward, RewardModel}, transition_model::{MatrixTransition, TransitionModel}};
 use float_cmp;
+#[derive(Clone)]
 pub struct MDPAgent<S, A, T, R> where
-    S: Eq + Hash,
-    A: Eq + Hash,
+    S: Eq + Hash + Clone,
+    A: Eq + Hash + Clone,
     T: TransitionModel<S, A>,
     R: RewardModel<S, A> {
         pub states: HashSet<S>,
@@ -14,8 +15,8 @@ pub struct MDPAgent<S, A, T, R> where
 }
 
 impl<S, A, T, R> MDPAgent<S, A, T, R>  where 
-    S: Eq + Hash,
-    A: Eq + Hash,
+    S: Eq + Hash + Clone,
+    A: Eq + Hash + Clone,
     T: TransitionModel<S, A>,
     R: RewardModel<S, A> {
     pub fn new(states: HashSet<S>, actions: HashSet<A>, transitions: T, rewards: R, discount: f64) -> Self {
@@ -81,15 +82,6 @@ impl MDPAgent<usize, usize, MatrixTransition, MatrixReward>{
 // Std traits implementation    
 // See https://rust-lang.github.io/api-guidelines/interoperability.html                                          //
 ////////////////////////////////////////////////////////////////////////////
-impl<S, A, T, R> Clone for MDPAgent<S, A, T, R>  where 
-S: Eq + Hash,
-A: Eq + Hash,
-T: TransitionModel<S, A>,
-R: RewardModel<S, A>{
-
-    fn clone(&self) -> Self { todo!() }
-
-}
 
 ////////////////////////////////////////////////////////////////////////////
 // Unit Tests                                                             //

@@ -27,7 +27,6 @@ impl<S, A, T, R> MDPAgent<S, A, T, R>  where
             rewards,
             discount,
         }
-
     }
 
     /**
@@ -43,7 +42,7 @@ impl<S, A, T, R> MDPAgent<S, A, T, R>  where
                 for s2 in &self.states {
                     sum_transition = sum_transition + self.transitions.get_transition(s1, a, s2);
                     let current_reward = self.rewards.get_reward(s1, a, s2);
-                    reward = reward + current_reward;
+                    reward = reward + current_reward.abs();
                 }
                 if !float_cmp::approx_eq!(f64, sum_transition, 1.0, ulps = 4) {
                     // if the values don't sum to 1 for this s1 and a
@@ -88,7 +87,7 @@ impl MDPAgent<usize, usize, MatrixTransition, MatrixReward>{
 ////////////////////////////////////////////////////////////////////////////
 #[cfg(test)]
 mod test{
-    use crate::mdp::{reward_model::MatrixReward, transition_model::MatrixTransition};
+    use crate::models::{reward_model::MatrixReward, transition_model::MatrixTransition};
 
     use super::*;
 

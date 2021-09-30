@@ -1,4 +1,4 @@
-use super::{mdp_agent::MDPAgent, reward_model::RewardModel, transition_model::TransitionModel};
+use crate::models::{mdp_agent::MDPAgent, reward_model::RewardModel, transition_model::TransitionModel};
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::option::Option;
@@ -249,34 +249,3 @@ mod test{
     }
 }
 
-//     #[test]
-//     fn value_iteration_solve() {
-// 	let mdp = create_student_mdp();
-// 	let mut solver = ValueIteration::new(&mdp, 0.01);
-// 	solver.solve();
-// 	let optimal_utility_vector = solver.get_value_vector();
-// 	let optimal_policy = solver.get_policy();
-
-// 	let expected_utility_vector = vec![8.126558, 9.79021, 7.72112, 0.0];
-// 	let expected_policy = vec![1, 1, 1, 0];
-
-// 	match optimal_utility_vector {
-// 	    None => panic!("No optimal policy has been found"),
-// 	    Some(v) => {
-// 		for index in 0..v.len() {
-// 		    assert!(approx_eq!(f32, v[index], expected_utility_vector[index], ulps=4))
-// 		}
-// 	    }
-// 	}
-	
-// 	match optimal_policy {
-// 	    None => panic!("No optimal policy has been found"),
-// 	    Some(p) => {
-// 		for index in 0..p.len() {
-// 		    assert!(p[index] == expected_policy[index])
-// 		}
-// 	    }
-// 	}
-//     }
-	
-// }

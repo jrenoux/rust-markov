@@ -3,10 +3,6 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use std::option::Option;
 
-// use crate::mdp::MDP;
-// use crate::utils::*;
-
-// use super::AbstractMDP;
 
 // ////////////////////////////////////////////////////////////////////////////
 // // Value Iteration                                                        //
